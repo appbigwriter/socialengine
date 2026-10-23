@@ -21,3 +21,5 @@
 @media(max-width:650px){.suggestion-grid{grid-template-columns:1fr}.suggestion-meta{flex-wrap:wrap}.source-suggestions .list-filters{flex-wrap:wrap}.source-suggestions select{max-width:100%}}
 
 .suggestion-category-note{padding:14px 16px;border-left:3px solid #9ab35d;background:#f2f5ea;border-radius:0 10px 10px 0;line-height:1.6}
+
+.discovery-open{margin:4px 0 20px;background:#edf3df;color:#173b2c}.discovery-links{display:flex;flex-wrap:wrap;gap:14px;font-size:12px}.discovery-links a{display:inline-flex;align-items:center;gap:5px}.suggestion-card>p.micro{min-height:0;font-size:12px}

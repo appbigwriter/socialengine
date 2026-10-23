@@ -117,7 +117,7 @@ O dashboard mostra oportunidades e saúde das fontes. Erros operacionais sensív
 
 ## Catálogo de fontes sugeridas — implementado em 23/10/2026
 
-O Radar possui a aba **Fontes sugeridas**, com 38 feeds em inglês de 21 editores e comunidades. São 12 temas: notícias, redes sociais, fóruns, espiritualidade, viagens, tecnologia/IA, marketing/creators, saúde, negócios, cultura/lifestyle, ciência/ambiente e educação. Há busca, filtro por tema e indicação de fontes já adicionadas no influenciador ativo.
+O Radar possui a aba **Fontes sugeridas**, com 44 feeds em inglês de 26 editores, comunidades e provedores. São 13 temas: notícias, redes sociais, fóruns, espiritualidade, viagens, tecnologia/IA, marketing/creators, saúde, negócios, cultura/lifestyle, ciência/ambiente, educação e tendências. Há busca, filtro por tema e indicação de fontes já adicionadas no influenciador ativo.
 
 O catálogo faz parte do código e não cria assinaturas nem registros de coleta automaticamente. “Adicionar fonte” abre um formulário com URL, nome, termos em inglês, idioma, região e intervalo inicial de seis horas. O usuário ajusta os termos ao nicho e confirma as condições de acesso. A assinatura usa a API existente, com escopo de tenant, permissões e limite de 30 fontes. A interface sinaliza fontes existentes e a API rejeita cadastros sequenciais do mesmo URL canônico no mesmo tenant; o mesmo feed pode ser escolhido por tenants diferentes. Não há nova migration.
 
@@ -126,11 +126,11 @@ O catálogo faz parte do código e não cria assinaturas nem registros de coleta
 - **RSS / Atom:** notícias, blogs, pesquisas e feeds temáticos. O coletor lê até 40 entradas por rodada, usando os textos/resumos efetivamente disponibilizados pelo editor; não busca automaticamente o artigo completo de cada entrada.
 - **HTML público:** extração do conteúdo principal de uma página específica, com texto suficiente. Não é um crawler de todo o site e não contorna login, paywall, bloqueio ou restrições de robots.txt.
 - PDFs, textos e materiais de referência pertencem à Biblioteca de fontes; não são conectores de monitoramento recorrente do Radar.
-- Popularidade no Instagram/TikTok/YouTube, Google Trends e comunidades exige conectores próprios, sinais quantitativos e contratos de acesso. Este catálogo não os simula. Feed recente gera uma oportunidade editorial; crescimento continua dependendo de histórico comparável.
+- Perfis, hashtags e popularidade no Instagram/TikTok/YouTube e APIs de comunidades exigem conectores próprios e contratos de acesso. Google Trends Trending Now já possui RSS para EUA/Reino Unido; séries históricas e filtros de Explore têm acesso separado. Nenhum desses sinais é simulado. Crescimento continua dependendo de histórico comparável.
 
 ### Seleção, acesso e verificação
 
-Foram mantidos apenas os 38 feeds que retornaram entradas válidas pelo coletor de produção, com as proteções de rede, robots.txt, formato e tamanho existentes. Os testes de rede ocorreram em 23/10/2026; disponibilidade futura e acesso a partir da VPS podem variar. O relatório contém apenas URL, data, contagem de entradas e resultado, sem republicar os materiais: `09-codigo/docs/trend-catalog-validation.json`.
+Foram mantidos apenas os 44 feeds que retornaram entradas válidas pelo coletor de produção, com as proteções de rede, robots.txt, formato e tamanho existentes. Os testes de rede ocorreram em 23/10/2026; disponibilidade futura e acesso a partir da VPS podem variar. O relatório contém apenas URL, data, contagem de entradas e resultado, sem republicar os materiais: `09-codigo/docs/trend-catalog-validation.json`.
 
 Fontes que falharam na verificação foram removidas, incluindo endereços com 404, XML inválido, tamanho excessivo, DNS recusado ou crawl-delay acima do limite. Não foram reduzidas proteções para fazê-las funcionar.
 
@@ -158,3 +158,35 @@ Os cartões identificam **conteúdo editorial**, **tópicos de fórum** e **publ
 O parser RSS passou de `rss-parser-v1` para `rss-parser-v2`: posts sem título, como os do Mastodon, usam um trecho de até 140 caracteres do conteúdo como identificação, com `titleOrigin=content_excerpt`. Títulos originais mantêm `titleOrigin=feed`. Entradas sem título e sem texto suficiente continuam excluídas, assim como links internos/inválidos. O histórico já gravado não é reescrito; as novas extrações registram a nova versão.
 
 As 38 fontes passaram pelo coletor real após essa alteração. Candidatas bloqueadas por robots.txt, DNS restrito ou frequência incompatível foram excluídas. A ampliação não ativa assinaturas dos tenants, não altera suas fontes existentes e não exige migration.
+
+
+### Diretório de agências, repercussão e ferramentas — implementação atual
+
+**44 feeds coletáveis** e **21 opções no diretório informativo** são contagens distintas: o diretório inclui provedores que ainda não podem ser conectados. Ele fica em **Radar → Fontes sugeridas → Explorar agências, redes e ferramentas**, com busca e filtro por tipo.
+
+- **Agências:** Reuters e Associated Press, com caminhos oficiais para Reuters Connect e AP Media API. Os conectores não estão implementados; não existe RSS genérico inventado nem requisição paga automática.
+- **Jornais:** NYT e Financial Times possuem feeds tecnicamente verificados e podem abrir o formulário existente de revisão. WSJ foi bloqueado por robots.txt e Washington Post retornou HTTP 502 na rodada documentada. Guardian e Le Monde aparecem com a exigência de autorização comercial de suas páginas oficiais, sem ativação pelo diretório.
+- **TV e mídia global:** BBC, Al Jazeera, DW e France 24 possuem RSS verificado. O feed candidato da CNN falhou no estabelecimento da conexão TLS e ficou como coleta não validada, sem afirmar indisponibilidade permanente do veículo.
+- **Repercussão:** Reddit r/worldnews, r/news, r/geopolitics e X estão identificados como API com integração pendente. No Reddit, acesso à API e uso comercial dependem de aprovação; no X, também é necessário prever credenciais, cobrança por uso e orçamento. Uma comunidade ou post não é apresentado como notícia verificada.
+- **Ferramentas:** Google Trends possui RSS Trending Now; TikTok Creative Center está disponível como consulta externa; Pinterest Trends e Perplexity apontam documentação de APIs, com conectores pendentes. Perplexity é pesquisa e síntese, sem atribuir a ele uma métrica de popularidade.
+
+As opções pendentes oferecem links oficiais para consulta, sem formulário de credenciais nem botão que simule uma conexão existente. A seleção de RSS continua explícita por tenant, com termos do nicho, frequência e confirmação das condições de acesso. RSS verificado não concede licença de reutilização nem acesso a artigos com paywall.
+
+#### Google Trends Trending Now
+
+- Feeds em inglês para EUA (`geo=US`) e Reino Unido (`geo=GB`), com região visível no cartão e no formulário. Eles acompanham pesquisas em alta no Google; não representam automaticamente buscas no YouTube nem a série de interesse relativo de 0 a 100 do Explore.
+- A estimativa `ht:approx_traffic` é preservada como texto em `searchSignal.rawApproximateTraffic`, somente quando o conteúdo vem da URL HTTPS oficial de Trending Now. Não é convertida em contagem exata, percentual de crescimento, intensidade ou popularidade em outra rede.
+- `growthComparable=false`; as observações continuam sem uma medida quantitativa comparável. O ranking mantém crescimento nulo até existir uma série com unidade, janela e cobertura adequadas.
+- Os itens do feed compartilham uma URL. `discoveryKey` combina provedor, país e fingerprint do termo para preservar consultas diferentes e atualizar o histórico do mesmo termo, sem unir EUA e Reino Unido.
+- O feed pode trazer apenas consulta, data, estimativa e link. O sistema não inventa o corpo de uma reportagem. Ao criar um rascunho, o material permanece como metadados; a geração exige uma fonte complementar com texto efetivamente extraído.
+- No sandbox, uma fonte Google Trends gerou **10 itens e 10 pautas distintos**, todos com estimativa e crescimento nulo; nenhuma falha da origem foi registrada.
+
+#### Evidências e qualidade
+
+A verificação registra agora também a data de publicação mais recente do feed. Isso permite distinguir funcionamento técnico de atualização editorial: NPR Health e Nomadic Matt receberam notas sobre ausência de atualização recente na verificação de 23/10/2026, sem apagar assinaturas existentes. O destaque inicial prioriza alternativas mais recentes.
+
+- `09-codigo/docs/trend-catalog-validation.json`: 44 feeds com itens válidos e datas de publicação encontradas.
+- `09-codigo/docs/global-news-validation.json`: sete candidatos de veículos globais, incluindo falhas documentadas de WSJ, Washington Post e CNN.
+- Testes: proveniência da estimativa do Google, ausência de crescimento fabricado, separação de consultas/países e impossibilidade de abrir formulário RSS para provedores pendentes.
+
+Referências oficiais: [Reuters Connect](https://reutersagency.com/content-delivery-platforms/reuters-connect/), [AP Media API](https://api.ap.org/media/v/docs/Getting_Started_API.htm), [Guardian RSS](https://www.theguardian.com/help/feeds), [Le Monde RSS](https://www.lemonde.fr/en/about-us/article/2026/03/27/le-monde-rss-feeds_6751860_115.html), [Reddit Responsible Builder Policy](https://support.reddithelp.com/hc/en-us/articles/42728983564564-Responsible-Builder-Policy), [X API](https://docs.x.com/x-api/getting-started/pricing), [Google Trending Now e exportação RSS](https://support.google.com/trends/answer/3076011?hl=en), [Google Trends API alpha](https://developers.google.com/search/apis/trends), [Pinterest Trends API](https://developer.pinterest.com/docs/analytics-and-reports/trends/), [Perplexity API](https://docs.perplexity.ai/docs/getting-started/overview).

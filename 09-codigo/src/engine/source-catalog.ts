@@ -1,8 +1,8 @@
 export interface SuggestedTrendSource {
   id:string; name:string; publisher:string; category:string; description:string;
   url:string; referenceUrl:string; type:'rss'; language:'en'; region:string;
-  keywords:string[]; intervalMinutes:number; accessNote:string;
-  sourceKind:'editorial'|'forum_topics'|'social_posts';
+  keywords:string[]; intervalMinutes:number; accessNote:string;freshnessNote?:string;
+  sourceKind:'editorial'|'forum_topics'|'social_posts'|'search_trends';
 }
 
 /** Stable identity for the directory UI; the server also validates public URLs. */
@@ -50,14 +50,21 @@ const entries:[string,string,string,string,string,string,string][]=[
  ['travel-off-path','Travel Off Path','Travel Off Path','Viagens','Destinos, novidades e mudanças para viajantes internacionais.','https://www.traveloffpath.com/feed/','travel,tourism,destination'],
  ['skift','Skift','Skift','Viagens','Negócios do turismo, hospitalidade e mudanças no comportamento de viagem.','https://skift.com/feed/','travel,hospitality,tourism'],
  ['bahai-teachings','Baha’i Teachings','Baha’i Teachings','Espiritualidade','Perspectiva bahá’í: propósito, unidade e reflexões espirituais.','https://bahaiteachings.org/feed/','spirituality,faith,purpose'],
+ ['nyt-world','The New York Times · World','The New York Times','Notícias','Manchetes e resumos internacionais; artigos completos podem exigir assinatura.','https://rss.nytimes.com/services/xml/rss/nyt/World.xml','world,news,international'],
+ ['ft-world','Financial Times · World','Financial Times','Notícias','Economia e política internacional; conteúdo integral pode exigir assinatura.','https://www.ft.com/world?format=rss','economy,world,markets'],
+ ['dw-world','Deutsche Welle · English','Deutsche Welle','Notícias','Cobertura internacional em inglês a partir da emissora alemã.','https://rss.dw.com/rdf/rss-en-all','world,Europe,news'],
+ ['france24','France 24 · English','France 24','Notícias','Notícias internacionais em inglês da emissora francesa.','https://www.france24.com/en/rss','world,news,international'],
+ ['google-trends-us','Google Trends · United States','Google Trends','Tendências','Pesquisas em alta no Google nos EUA; consultas, links e estimativas, sem texto de reportagem.','https://trends.google.com/trending/rss?geo=US','news,technology,business,travel'],
+ ['google-trends-gb','Google Trends · United Kingdom','Google Trends','Tendências','Pesquisas em alta no Google no Reino Unido; não equivale a tendências do YouTube.','https://trends.google.com/trending/rss?geo=GB','news,technology,business,travel'],
 ];
 
-const featured=['npr-news','social-media-today','hacker-news','lions-roar','nomadic-matt','mit-ai','npr-health','buffer','techcrunch'];
+const featured=['npr-news','social-media-today','hacker-news','lions-roar','travel-off-path','mit-ai','bbc-health','buffer','techcrunch'];
 const priority=(id:string)=>{const index=featured.indexOf(id);return index<0?featured.length:index;};
 export const trendSourceCatalog:SuggestedTrendSource[]=entries.sort((a,b)=>priority(a[0])-priority(b[0])).map(([id,name,publisher,category,description,url,words])=>({
-  id,name,publisher,category,description,url,type:'rss',language:'en',region:'Global',
-  sourceKind:id==='mastodon-official'?'social_posts':category==='Fóruns'?'forum_topics':'editorial',
+  id,name,publisher,category,description,url,type:'rss',language:'en',region:publisher==='Google Trends'?new URL(url).searchParams.get('geo')!:'Global',
+  sourceKind:publisher==='Google Trends'?'search_trends':id==='mastodon-official'?'social_posts':category==='Fóruns'?'forum_topics':'editorial',
   keywords:words.split(','),intervalMinutes:360,
-  referenceUrl:publisher==='BBC'?'https://www.bbc.co.uk/usingthebbc/terms/':publisher==='MIT News'?'https://news.mit.edu/terms-of-use':publisher==='NPR'?'https://www.npr.org/':new URL(url).origin,
+  ...(id==='npr-health'?{freshnessNote:'Verificação de 23/10/2026: último item encontrado em 12/01/2026; útil como referência, sem atualização recente confirmada.'}:id==='nomadic-matt'?{freshnessNote:'Verificação de 23/10/2026: último item encontrado em 28/07/2026. Publicação irregular; combine com fontes atualizadas.'}:{}),
+  referenceUrl:publisher==='Google Trends'?'https://support.google.com/trends/answer/3076011?hl=en':publisher==='BBC'?'https://www.bbc.co.uk/usingthebbc/terms/':publisher==='MIT News'?'https://news.mit.edu/terms-of-use':publisher==='NPR'?'https://www.npr.org/':new URL(url).origin,
   accessNote:publisher==='BBC'?'A BBC exige permissão para uso comercial dos feeds; obtenha autorização antes de ativar.':publisher==='MIT News'?'Consulte a política de atribuição do MIT News. Imagens têm condições próprias e não são importadas pelo catálogo.':'Consulte as condições do editor para monitoramento e uso comercial. O catálogo não concede licença de republicação.',
 }));

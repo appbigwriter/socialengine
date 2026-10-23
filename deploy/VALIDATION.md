@@ -5,7 +5,7 @@ Data: 23/10/2026. Estado: **pacote atualizado com o catálogo de fontes; serviç
 ## Evidências
 
 - `npm run build`: typecheck e build Vite aprovados.
-- `npm test`: 34 testes aprovados, zero falhas e um teste de rede opt-in não executado nessa rodada.
+- `npm test`: 36 testes aprovados, zero falhas e um teste de rede opt-in não executado nessa rodada.
 - Docker build da base anterior executado na VPS com dependências Linux de produção.
 - Imagem local na VPS: `socialengine:deploy-20261023-a69083c`.
 - ID da imagem: `sha256:14b1574db0d53d50b6c48e647a3879dbb4401cfe4e5b8b4db254635c74d1f8e3`.
@@ -27,7 +27,7 @@ Data: 23/10/2026. Estado: **pacote atualizado com o catálogo de fontes; serviç
 SHA-256 do pacote atual (catálogo incluído; validação local):
 
 ```text
-dabd29061683cdbf6bb04486e3765fe305d5ef758e3c983cb9a4e0ef8aaf3099
+96813179974949621d6443e3ff3011a829095c8d1df25eb4b6779609b9e7c4fd
 ```
 
 Se o pacote for regenerado após alterações, registrar o novo hash e revalidar os checks afetados. O pacote contém o código implantável; testes locais e documentação externa ao contexto não são incluídos nele.
@@ -45,7 +45,7 @@ Essas dependências impedem declarar o ambiente funcionalmente liberado, mas nã
 
 ## Atualização do Radar — 23/10/2026
 
-- 38 feeds em inglês verificados com o coletor real: todos retornaram entradas válidas, sem afrouxar robots.txt, validação de DNS ou limite de tamanho.
+- 44 feeds em inglês verificados com o coletor real: todos retornaram entradas válidas, sem afrouxar robots.txt, validação de DNS ou limite de tamanho.
 - Evidência de rede: `09-codigo/docs/trend-catalog-validation.json`.
 - Interface local: busca, filtro por tema, revisão do formulário, confirmação obrigatória, cadastro e estado “Já adicionada” verificados no sandbox.
 - Testes de API: seleção isolada por tenant, recusa de duplicata sequencial com tracking, ausência de coleta sem confirmação e bloqueio do perfil viewer.
@@ -54,3 +54,12 @@ Essas dependências impedem declarar o ambiente funcionalmente liberado, mas nã
 - Ampliação de cobertura: notícias, redes sociais, fóruns, espiritualidade e viagens conferidos no filtro e nos cartões da interface local.
 - Parser RSS v2: coleta real de 20 publicações da conta oficial do Mastodon confirmada. Teste offline cobre posts sem título, títulos vazios, preservação de títulos originais e rejeição de links internos/entradas vazias.
 - A ampliação não fornece coleta de hashtags nem métricas de popularidade de Instagram/TikTok/YouTube.
+
+
+## Agências, repercussão e ferramentas — 23/10/2026
+
+- Diretório com 21 entradas: 13 agências/veículos globais, três comunidades Reddit, X e quatro ferramentas de tendências/pesquisa. Somente entradas com RSS verificado abrem o formulário de adição; pendências de API/licença/coleta estão identificadas.
+- NYT World, Financial Times World, DW English, France 24 e Google Trends EUA/Reino Unido adicionados ao catálogo coletável, totalizando 44 feeds. Todos retornaram itens pelo coletor real.
+- Google Trends verificado no worker do sandbox: dez consultas preservadas em dez itens/pautas, estimativas mantidas como aproximadas e crescimento nulo. A identidade inclui termo e país porque a origem reutiliza o mesmo link para várias consultas.
+- Nenhuma API paga foi chamada, credencial externa criada ou coleta de Reddit/X/TikTok/Pinterest/Perplexity ativada. Esses conectores permanecem pendentes.
+- A imagem Docker da base ff68259 continua como evidência anterior; o pacote atual deve gerar uma nova imagem no Easypanel. Não houve implantação pública nesta atualização.

@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import type {Job,Scope} from '../contracts.ts';
 import type {EngineDeps} from './types.ts';
-import {collectSource,rankItem,type TrendSource,type ExtractedItem,type Observation} from './trends.ts';
+import {collectSource,rankItem,sameTrendItem,type TrendSource,type ExtractedItem,type Observation} from './trends.ts';
 import {publishDestination,reconcilePublication,collectPublicationMetrics} from '../social/index.ts';
 
 interface RawJob {id:string;project_id:string;owner_id:string;tenant_id:string;event_type:string;payload:Record<string,unknown>;state:Job['state'];run_at:string;attempts:number;idempotency_key:string;lease_token?:string;lease_until?:string;last_error?:string}
@@ -13,7 +13,7 @@ async function collect(deps:EngineDeps,scope:Scope,job:Job){
  try {
   const items=await collectSource(source.data);const existing=await deps.repo.list<ExtractedItem&{sourceIds:string[];observedAt:string;ranking:unknown}>(scope,'trend_item');
   for(const item of items){
-   const same=existing.find(x=>x.data.url===item.url||x.data.fingerprint===item.fingerprint);
+   const same=existing.find(x=>sameTrendItem(x.data,item));
    const topicId=same?.id??randomUUID();
    const observation:Observation&{itemId:string;method:string}={itemId:topicId,observedAt:now,coverageComplete:true,sourceId:source.id,method:item.method};
    // Presence observation has no invented quantitative signal; repeated polls cannot prove growth.
@@ -27,7 +27,7 @@ async function collect(deps:EngineDeps,scope:Scope,job:Job){
    if(!priorObservation)await deps.repo.insert(scope,'trend_observation',{...observation,jobId:job.id});
    if(ranking.excluded)continue;
    const topic=(await deps.repo.list<{itemId:string}>(scope,'trend_topic')).find(x=>x.data.itemId===topicId);
-   const topicData={itemId:topicId,title:item.title,summary:item.text.slice(0,300),sourceIds:data.sourceIds,sources:[{url:item.url,method:item.method}],firstObservedAt:topic?.createdAt??now,lastObservedAt:now,state:ranking.state,relevance:ranking.relevance,confidence:ranking.confidence,intensity:null,growth:ranking.growth,reason:ranking.reasons.join('. '),rankingVersion:ranking.version};
+   const topicData={itemId:topicId,title:item.title,summary:item.text.slice(0,300),...(item.searchSignal?{searchSignal:item.searchSignal}:{}),sourceIds:data.sourceIds,sources:[{url:item.url,method:item.method}],firstObservedAt:topic?.createdAt??now,lastObservedAt:now,state:ranking.state,relevance:ranking.relevance,confidence:ranking.confidence,intensity:null,growth:ranking.growth,reason:ranking.reasons.join('. '),rankingVersion:ranking.version};
    if(topic)await deps.repo.update(scope,'trend_topic',topic.id,topicData,topic.revision);else await deps.repo.insert(scope,'trend_topic',topicData);
   }
   await deps.repo.update(scope,'trend_source',source.id,{...source.data,lastCollectedAt:now,lastError:undefined},source.revision);

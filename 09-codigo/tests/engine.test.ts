@@ -2,11 +2,28 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import {publicAddress,publicUrl,robotsAllowed} from '../src/engine/network.ts';
-import {extractHtml,canonicalUrl,rankItem,fingerprint,latestMetricSnapshots,parseFeed} from '../src/engine/trends.ts';
+import {extractHtml,canonicalUrl,rankItem,fingerprint,latestMetricSnapshots,parseFeed,sameTrendItem} from '../src/engine/trends.ts';
 import {renderSlide} from '../src/engine/media.ts';
 import {generateOpenAI} from '../src/engine/ai.ts';
 import {requireApproved,ensureSocialCapability} from '../src/engine/social.ts';
 import type {PostData,RecordRow} from '../src/contracts.ts';
+
+test('Google Trends approximate traffic is retained with provenance without fabricating growth',async()=>{
+ const xml='<rss version="2.0" xmlns:ht="https://trends.google.com/trending/rss"><channel><title>Trending Now</title><item><title>sample query</title><link>https://trends.google.com/trending?geo=US</link><ht:approx_traffic>200K+</ht:approx_traffic></item></channel></rss>';
+ const [item]=await parseFeed(xml,'https://trends.google.com/trending/rss?geo=US');
+ assert.deepEqual(item.searchSignal,{provider:'google_trends',rawApproximateTraffic:'200K+',growthComparable:false});
+ assert.equal(item.text,'','search query metadata must not fabricate a news article');
+ assert.equal(rankItem(item,{keywords:['sample'],exclusions:[]},[]).growth,null);
+ assert.equal((await parseFeed(xml,'https://example.com/rss'))[0].searchSignal,undefined,'a foreign RSS namespace cannot claim Google provenance');
+ assert.equal((await parseFeed(xml))[0].searchSignal,undefined);
+ assert.equal((await parseFeed(xml,'http://trends.google.com/trending/rss?geo=US'))[0].searchSignal,undefined);
+ const [otherQuery]=await parseFeed(xml.replace('sample query','another query'),'https://trends.google.com/trending/rss?geo=US');
+ const [otherCountry]=await parseFeed(xml,'https://trends.google.com/trending/rss?geo=GB');
+ assert.equal(item.url,otherQuery.url);assert.equal(sameTrendItem(item,otherQuery),false,'different queries sharing one link must not collapse into one item');
+ assert.equal(sameTrendItem(item,otherCountry),false,'query-country scopes remain distinct');
+ const [repeat]=await parseFeed(xml.replace('200K+','500K+'),'https://trends.google.com/trending/rss?geo=US');
+ assert.equal(sameTrendItem(item,repeat),true,'a later sample of the same query updates its history');
+});
 
 test('social RSS without a title uses an explicit content excerpt and retains origin',async()=>{
  const content='A public post about building healthy online communities and sharing original ideas.';
