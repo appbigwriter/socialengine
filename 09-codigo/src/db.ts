@@ -7,7 +7,7 @@ import type {Database,RuntimeConfig,Scope,Tx,QueryResult} from './contracts.js';
 export async function createDatabase(config:RuntimeConfig):Promise<Database>{
   let chain:Promise<unknown>=Promise.resolve();
   const local=config.sandbox ? (await mkdir(config.dataDir,{recursive:true}), new PGlite(join(config.dataDir,'postgres'))) : undefined;
-  const pool=local?undefined:new pg.Pool({connectionString:config.databaseUrl,max:10});
+  const pool=local?undefined:new pg.Pool({connectionString:config.databaseUrl,max:10,connectionTimeoutMillis:8000,idleTimeoutMillis:30000,statement_timeout:15000,application_name:'socialengine'});
   if(!local&&!config.databaseUrl) throw new Error('DATABASE_URL_REQUIRED');
   const transaction=async<T>(scope:Scope|undefined,fn:(tx:Tx)=>Promise<T>):Promise<T>=>{
     const run=async()=>{
