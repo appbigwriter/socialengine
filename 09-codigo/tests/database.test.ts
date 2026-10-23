@@ -1,0 +1,46 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {randomUUID} from 'node:crypto';
+import {createDatabase} from '../src/db.js';
+import {readConfig} from '../src/config.js';
+import {Repository} from '../src/repository.js';
+import {migrate} from '../scripts/migrate.js';
+test('restricted role denies cross-tenant/anonymous reads and writes, preserves optimistic revision',async()=>{
+ const dataDir=await mkdtemp(join(tmpdir(),'socialengine-db-'));const db=await createDatabase({...readConfig(true),dataDir});
+ try{
+  await migrate(db);await migrate(db);const repo=new Repository(db);const project=randomUUID(),owner=randomUUID(),alice=randomUUID(),bob=randomUUID();
+  const wa=await repo.createWorkspace(alice,project,owner,{name:'A'}),wb=await repo.createWorkspace(bob,project,owner,{name:'B'});
+  const a=await repo.getScope(alice,project,owner,wa.id),b=await repo.getScope(bob,project,owner,wb.id);
+  const record=await repo.insert(a,'source',{title:'private'});
+  assert.equal((await repo.list(a,'source')).length,1);assert.equal(await repo.get(b,'source',record.id),undefined);
+  await assert.rejects(repo.getScope(bob,project,owner,wa.id));
+  const forged={...a,actorId:bob};assert.equal((await repo.list(forged,'source')).length,0);
+  await assert.rejects(repo.insert(forged,'source',{title:'forged'}));
+  await db.scoped(a,async t=>{const role=await t.query<{current_user:string}>('SELECT current_user');assert.equal(role.rows[0]?.current_user,'socialengine_app');assert.equal((await t.query('SELECT * FROM custom_socialengine.entities WHERE id=$1',[wb.id])).rowCount,0);await assert.rejects(t.query('INSERT INTO custom_socialengine.records(id,entity_id,data,kind,project_id,owner_id,tenant_id) VALUES($1,$2,$3,$4,$5,$6,$7)',[randomUUID(),wb.id,{},'source',project,owner,wa.id]));});
+  const races=await Promise.allSettled([repo.update(a,'source',record.id,{title:'first'},1),repo.update(a,'source',record.id,{title:'second'},1)]);assert.equal(races.filter(x=>x.status==='fulfilled').length,1);assert.equal(races.filter(x=>x.status==='rejected').length,1);
+  assert.equal((await repo.get(a,'source',record.id))?.revision,2);
+  const anonymous={...a,actorId:randomUUID()};assert.equal((await repo.list(anonymous,'source')).length,0);
+  const editorId=randomUUID(),reviewerId=randomUUID(),viewerId=randomUUID();
+  await repo.setMember(a,editorId,['editor']);await repo.setMember(a,reviewerId,['reviewer']);await repo.setMember(a,viewerId,['viewer']);
+  const editor=await repo.getScope(editorId,project,owner,wa.id),reviewer=await repo.getScope(reviewerId,project,owner,wa.id),viewer=await repo.getScope(viewerId,project,owner,wa.id);
+  const post=await repo.insert(editor,'post',{title:'Post',status:'draft',slides:[]});
+  assert.equal((await repo.list(a,'post_version')).length,1);
+  await assert.rejects(repo.insert(viewer,'source',{title:'forbidden'}));
+  await assert.rejects(repo.update(viewer,'post',post.id,{title:'hacked',status:'draft',slides:[]},1));
+  await assert.rejects(repo.update(editor,'post',post.id,{title:'Post',status:'approved',slides:[]},1));
+  const submitted=await repo.update(editor,'post',post.id,{title:'Post',status:'in_review',slides:[]},1);
+  const approved=await repo.update(reviewer,'post',post.id,{title:'Post',status:'approved',slides:[]},submitted.revision);
+  assert.equal(approved.data.status,'approved');
+  const changed=await repo.update(editor,'post',post.id,{...approved.data,title:'Changed'},approved.revision);
+  assert.equal(changed.data.status,'draft');assert.equal((changed.data as Record<string,unknown>).approvedBy,undefined);
+  const versions=await repo.list(a,'post_version');assert.equal(versions.length,4);
+  await assert.rejects(repo.update(a,'post_version',versions[0]!.id,{},1));
+  assert.equal((await repo.listMembers(viewer)).length,1);
+  await assert.rejects(repo.setMember(a,alice,[]));
+  await assert.rejects(db.system(t=>t.query('UPDATE custom_socialengine.records SET owner_id=$1 WHERE id=$2',[randomUUID(),record.id])));
+  await repo.audit(a,'tested',record.id);assert.equal((await repo.listAudit(a)).length,8);assert.equal((await repo.listAudit(b)).length,0);
+ }finally{await db.close();await rm(dataDir,{recursive:true,force:true});}
+});

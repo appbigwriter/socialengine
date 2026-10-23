@@ -1,0 +1,57 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {randomBytes,randomUUID} from 'node:crypto';
+import sharp from 'sharp';
+import {readConfig,SANDBOX_ACTOR,SANDBOX_SECOND_ACTOR} from '../src/config.ts';
+import {createDatabase} from '../src/db.ts';
+import {migrate} from '../scripts/migrate.ts';
+import {createApplication} from '../src/app.ts';
+import type {PostData} from '../src/contracts.ts';
+
+test('API: tenant isolation, blog, editorial workflow, encrypted credentials and private files',async()=>{
+  const directory=await mkdtemp(join(tmpdir(),'socialengine-api-'));const config={...readConfig(true),dataDir:directory,encryptionKey:randomBytes(32).toString('base64')};
+  const db=await createDatabase(config);await migrate(db);const {app,repo,vault,files}=await createApplication(config,db);
+  const auth={authorization:'Bearer sandbox-admin'},otherAuth={authorization:'Bearer sandbox-second'};
+  try{
+    assert.equal((await app.inject({method:'GET',url:'/api/workspaces'})).statusCode,401);
+    const a=await repo.createWorkspace(SANDBOX_ACTOR,config.projectId,config.ownerId!,{name:'Primeiro influenciador'});
+    const b=await repo.createWorkspace(SANDBOX_SECOND_ACTOR,config.projectId,config.ownerId!,{name:'Segundo influenciador'});
+    const scope=await repo.getScope(SANDBOX_ACTOR,config.projectId,config.ownerId!,a.id);
+    const scopeB=await repo.getScope(SANDBOX_SECOND_ACTOR,config.projectId,config.ownerId!,b.id);
+    const list=(await app.inject({method:'GET',url:'/api/workspaces',headers:auth})).json();assert.equal(list.workspaces.length,1);assert.equal(list.workspaces[0].id,a.id);
+    assert.equal((await app.inject({method:'GET',url:`/api/tenants/${b.id}/dataset`,headers:auth})).statusCode,403);
+    assert.equal((await app.inject({method:'PATCH',url:`/api/tenants/${a.id}/settings`,headers:auth,payload:{...a,blog:{...a.blog,status:'active',url:''}}})).statusCode,400);
+    const settings=await app.inject({method:'PATCH',url:`/api/tenants/${a.id}/settings`,headers:auth,payload:{...a,blog:{...a.blog,status:'active',url:'https://blog.example.com',platform:'Ainda não definido'},ai:{provider:'openai',model:'configured-model',monthlyRequests:10}}});assert.equal(settings.statusCode,200,settings.body);
+    const dataset=(await app.inject({method:'GET',url:`/api/tenants/${a.id}/dataset`,headers:auth})).json();assert.equal(dataset.workspace.blog.url,'https://blog.example.com');assert.equal(dataset.workspace.ai.monthlyRequests,10);
+    const sourceA=await repo.insert(scope,'source',{title:'Fonte A',kind:'text',text:'Texto da primeira fonte',extractionState:'extracted'});
+    const sourceB=await repo.insert(scopeB,'source',{title:'Fonte B',kind:'text',text:'Texto de outro espaço',extractionState:'extracted'});
+    const body:PostData={title:'Uma ideia para o teste',format:'carousel',slides:[{id:randomUUID(),title:'Capa',body:'Texto'}],caption:'Legenda',cta:'Próximo passo',sourceIds:[sourceA.id],structure:'educational',color:'#c9f177',platforms:['instagram'],status:'draft'};
+    const wrong=await app.inject({method:'POST',url:`/api/tenants/${a.id}/posts`,headers:auth,payload:{...body,sourceIds:[sourceB.id]}});assert.equal(wrong.statusCode,400);
+    let response=await app.inject({method:'POST',url:`/api/tenants/${a.id}/posts`,headers:auth,payload:body});assert.equal(response.statusCode,200,response.body);let post=response.json().post;
+    response=await app.inject({method:'POST',url:`/api/tenants/${a.id}/posts/${post.id}/review`,headers:auth,payload:{revision:post.revision,action:'approve'}});assert.equal(response.statusCode,409);
+    response=await app.inject({method:'POST',url:`/api/tenants/${a.id}/posts/${post.id}/review`,headers:auth,payload:{revision:post.revision,action:'submit'}});assert.equal(response.statusCode,200,response.body);post=response.json().post;
+    response=await app.inject({method:'POST',url:`/api/tenants/${a.id}/posts/${post.id}/review`,headers:auth,payload:{revision:post.revision,action:'approve'}});assert.equal(response.statusCode,200,response.body);post=response.json().post;assert.equal(post.data.status,'approved');assert.equal(post.data.approvedBy,SANDBOX_ACTOR);
+    const approvedRevision=post.revision;
+    response=await app.inject({method:'PUT',url:`/api/tenants/${a.id}/posts/${post.id}`,headers:auth,payload:{revision:post.revision,data:{...post.data,caption:'Legenda alterada'}}});assert.equal(response.statusCode,200,response.body);post=response.json().post;assert.equal(post.data.status,'draft');assert.equal(post.data.approvedBy,undefined);
+    response=await app.inject({method:'PUT',url:`/api/tenants/${a.id}/posts/${post.id}`,headers:auth,payload:{revision:approvedRevision,data:post.data}});assert.equal(response.statusCode,409);
+    assert.equal((await repo.list(scope,'post_version')).length,4);
+    await repo.setMember(scope,SANDBOX_SECOND_ACTOR,['viewer']);
+    assert.equal((await app.inject({method:'POST',url:`/api/tenants/${a.id}/posts`,headers:otherAuth,payload:body})).statusCode,403);
+    assert.equal((await app.inject({method:'PATCH',url:`/api/tenants/${a.id}/settings`,headers:otherAuth,payload:a})).statusCode,403);
+    const secret='sk-local-test-never-real-123456789';
+    response=await app.inject({method:'POST',url:`/api/tenants/${a.id}/credentials`,headers:auth,payload:{provider:'openai',key:secret}});assert.equal(response.statusCode,200,response.body);assert(!response.body.includes(secret));const cred=response.json().credential;
+    assert.equal(await vault.reveal(scope,'openai'),secret);assert.equal(await vault.reveal(scopeB,'openai'),null);
+    assert(!(await app.inject({method:'GET',url:`/api/tenants/${a.id}/dataset`,headers:auth})).body.includes(secret));
+    response=await app.inject({method:'POST',url:`/api/tenants/${a.id}/credentials`,headers:auth,payload:{provider:'openai',key:secret+'-rotated'}});assert.equal(response.statusCode,200,response.body);assert.equal(await vault.reveal(scope,'openai'),secret+'-rotated');
+    assert.equal((await app.inject({method:'DELETE',url:`/api/tenants/${b.id}/credentials/${cred.id}`,headers:otherAuth})).statusCode,404);
+    const active=response.json().credential;assert.equal((await app.inject({method:'DELETE',url:`/api/tenants/${a.id}/credentials/${active.id}`,headers:auth})).statusCode,200);assert.equal(await vault.reveal(scope,'openai'),null);
+    const png=await sharp({create:{width:10,height:10,channels:3,background:'#c9f177'}}).png().toBuffer();const file=await files.put(scope,png,'marca.png','image/png');
+    const download=await app.inject({method:'GET',url:`/api/tenants/${a.id}/files/${file.id}`,headers:auth});assert.equal(download.statusCode,200);assert.equal(download.headers['content-type'],'image/png');assert.match(String(download.headers['content-disposition']),/attachment/);
+    assert.equal((await app.inject({method:'GET',url:`/api/tenants/${b.id}/files/${file.id}`,headers:otherAuth})).statusCode,404);
+    const exports=await app.inject({method:'GET',url:`/api/tenants/${a.id}/posts/${post.id}/export?format=png&slide=0`,headers:auth});assert.equal(exports.statusCode,200,exports.body.slice(0,200));assert.equal((await sharp(exports.rawPayload).metadata()).width,1080);
+    assert.equal((await app.inject({method:'GET',url:'/missing-page'})).statusCode,404);
+  }finally{await app.close();await db.close();await rm(directory,{recursive:true,force:true});}
+});

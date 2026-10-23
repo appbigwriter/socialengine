@@ -1,0 +1,24 @@
+# Runtime configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.data/
+*.tar
+*.tar.gz
+*.mp4
+*.png
+!.gitkeep
+.env.local
+.temp/
