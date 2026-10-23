@@ -2,11 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import {publicAddress,publicUrl,robotsAllowed} from '../src/engine/network.ts';
-import {extractHtml,canonicalUrl,rankItem,fingerprint,latestMetricSnapshots} from '../src/engine/trends.ts';
+import {extractHtml,canonicalUrl,rankItem,fingerprint,latestMetricSnapshots,parseFeed} from '../src/engine/trends.ts';
 import {renderSlide} from '../src/engine/media.ts';
 import {generateOpenAI} from '../src/engine/ai.ts';
 import {requireApproved,ensureSocialCapability} from '../src/engine/social.ts';
 import type {PostData,RecordRow} from '../src/contracts.ts';
+
+test('social RSS without a title uses an explicit content excerpt and retains origin',async()=>{
+ const content='A public post about building healthy online communities and sharing original ideas.';
+ const items=await parseFeed(`<rss version="2.0"><channel><title>Public account</title><link>https://example.com/@account</link><description>Posts</description><item><link>https://example.com/@account/123</link><description><![CDATA[<p>${content}</p>]]></description><guid>123</guid></item><item><title>Original headline</title><link>https://example.com/article</link><description>Short</description></item><item><link>http://127.0.0.1/private</link><description>${content}</description></item><item><link>https://example.com/empty</link></item></channel></rss>`);
+ assert.equal(items.length,2);assert.equal(items[0].title,content);assert.equal(items[0].titleOrigin,'content_excerpt');assert.equal(items[0].url,'https://example.com/@account/123');assert.equal(items[0].externalId,'123');assert.equal(items[0].method,'rss-parser-v2');assert.equal(items[1].titleOrigin,'feed');assert.equal(items[1].title,'Original headline');
+ const blankTitle=await parseFeed(`<rss version="2.0"><channel><title>Posts</title><item><title>   </title><link>https://example.com/post</link><description>${content}</description></item></channel></rss>`);
+ assert.equal(blankTitle[0].title,content);assert.equal(blankTitle[0].titleOrigin,'content_excerpt');
+});
 
 test('SSRF blocks private, loopback, link-local, reserved, IPv4-mapped IPv6',()=>{
  for(const ip of ['127.0.0.1','10.0.0.1','172.16.2.1','192.168.1.1','169.254.169.254','0.0.0.0','100.64.0.1','198.18.0.1','203.0.113.5','224.0.0.1','::1','::ffff:127.0.0.1','fe80::1','fd00::1','2001:db8::1'])assert.equal(publicAddress(ip),false,ip);

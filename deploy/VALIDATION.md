@@ -5,7 +5,7 @@ Data: 23/10/2026. Estado: **pacote atualizado com o catálogo de fontes; serviç
 ## Evidências
 
 - `npm run build`: typecheck e build Vite aprovados.
-- `npm test`: 32 testes aprovados, zero falhas e um teste de rede opt-in não executado nessa rodada.
+- `npm test`: 34 testes aprovados, zero falhas e um teste de rede opt-in não executado nessa rodada.
 - Docker build da base anterior executado na VPS com dependências Linux de produção.
 - Imagem local na VPS: `socialengine:deploy-20261023-a69083c`.
 - ID da imagem: `sha256:14b1574db0d53d50b6c48e647a3879dbb4401cfe4e5b8b4db254635c74d1f8e3`.
@@ -27,7 +27,7 @@ Data: 23/10/2026. Estado: **pacote atualizado com o catálogo de fontes; serviç
 SHA-256 do pacote atual (catálogo incluído; validação local):
 
 ```text
-fd34df07a8e8c846f6d2b4e74965963622d47dcaa7a341ef894a679839f3be65
+dabd29061683cdbf6bb04486e3765fe305d5ef758e3c983cb9a4e0ef8aaf3099
 ```
 
 Se o pacote for regenerado após alterações, registrar o novo hash e revalidar os checks afetados. O pacote contém o código implantável; testes locais e documentação externa ao contexto não são incluídos nele.
@@ -45,8 +45,12 @@ Essas dependências impedem declarar o ambiente funcionalmente liberado, mas nã
 
 ## Atualização do Radar — 23/10/2026
 
-- 25 feeds em inglês verificados com o coletor real: todos retornaram entradas válidas, sem afrouxar robots.txt, validação de DNS ou limite de tamanho.
+- 38 feeds em inglês verificados com o coletor real: todos retornaram entradas válidas, sem afrouxar robots.txt, validação de DNS ou limite de tamanho.
 - Evidência de rede: `09-codigo/docs/trend-catalog-validation.json`.
 - Interface local: busca, filtro por tema, revisão do formulário, confirmação obrigatória, cadastro e estado “Já adicionada” verificados no sandbox.
 - Testes de API: seleção isolada por tenant, recusa de duplicata sequencial com tracking, ausência de coleta sem confirmação e bloqueio do perfil viewer.
 - Nenhuma migration necessária nesta atualização. A imagem Docker anterior não contém este catálogo; construir uma nova imagem a partir do código/pacote atual no Easypanel.
+
+- Ampliação de cobertura: notícias, redes sociais, fóruns, espiritualidade e viagens conferidos no filtro e nos cartões da interface local.
+- Parser RSS v2: coleta real de 20 publicações da conta oficial do Mastodon confirmada. Teste offline cobre posts sem título, títulos vazios, preservação de títulos originais e rejeição de links internos/entradas vazias.
+- A ampliação não fornece coleta de hashtags nem métricas de popularidade de Instagram/TikTok/YouTube.

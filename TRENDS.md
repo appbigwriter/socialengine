@@ -117,7 +117,7 @@ O dashboard mostra oportunidades e saúde das fontes. Erros operacionais sensív
 
 ## Catálogo de fontes sugeridas — implementado em 23/10/2026
 
-O Radar possui a aba **Fontes sugeridas**, com 25 feeds em inglês de nove editores: MIT News, Google, TechCrunch, NPR, BBC, The Verge, Smithsonian, Buffer e WordPress. São oito temas: tecnologia/IA, marketing/creators, saúde, negócios, cultura/lifestyle, ciência/ambiente, atualidades e educação. Há busca, filtro por tema e indicação de fontes já adicionadas no influenciador ativo.
+O Radar possui a aba **Fontes sugeridas**, com 38 feeds em inglês de 21 editores e comunidades. São 12 temas: notícias, redes sociais, fóruns, espiritualidade, viagens, tecnologia/IA, marketing/creators, saúde, negócios, cultura/lifestyle, ciência/ambiente e educação. Há busca, filtro por tema e indicação de fontes já adicionadas no influenciador ativo.
 
 O catálogo faz parte do código e não cria assinaturas nem registros de coleta automaticamente. “Adicionar fonte” abre um formulário com URL, nome, termos em inglês, idioma, região e intervalo inicial de seis horas. O usuário ajusta os termos ao nicho e confirma as condições de acesso. A assinatura usa a API existente, com escopo de tenant, permissões e limite de 30 fontes. A interface sinaliza fontes existentes e a API rejeita cadastros sequenciais do mesmo URL canônico no mesmo tenant; o mesmo feed pode ser escolhido por tenants diferentes. Não há nova migration.
 
@@ -130,7 +130,7 @@ O catálogo faz parte do código e não cria assinaturas nem registros de coleta
 
 ### Seleção, acesso e verificação
 
-Foram mantidos apenas os 25 feeds que retornaram entradas válidas pelo coletor de produção, com as proteções de rede, robots.txt, formato e tamanho existentes. Os testes de rede ocorreram em 23/10/2026; disponibilidade futura e acesso a partir da VPS podem variar. O relatório contém apenas URL, data, contagem de entradas e resultado, sem republicar os materiais: `09-codigo/docs/trend-catalog-validation.json`.
+Foram mantidos apenas os 38 feeds que retornaram entradas válidas pelo coletor de produção, com as proteções de rede, robots.txt, formato e tamanho existentes. Os testes de rede ocorreram em 23/10/2026; disponibilidade futura e acesso a partir da VPS podem variar. O relatório contém apenas URL, data, contagem de entradas e resultado, sem republicar os materiais: `09-codigo/docs/trend-catalog-validation.json`.
 
 Fontes que falharam na verificação foram removidas, incluindo endereços com 404, XML inválido, tamanho excessivo, DNS recusado ou crawl-delay acima do limite. Não foram reduzidas proteções para fazê-las funcionar.
 
@@ -139,3 +139,22 @@ A disponibilidade técnica não concede direitos de republicação. Os cartões 
 Referências primárias: [feeds do MIT News](https://news.mit.edu/rss), [política do MIT News](https://news.mit.edu/terms-of-use), [termos da BBC — seção sobre RSS](https://downloads.bbc.co.uk/usingthebbc/bbc_terms_of_use_19September2022english.pdf). Os próprios feeds dos demais editores estão registrados no catálogo e no relatório.
 
 Para revalidar a partir do diretório `09-codigo`: `npm run trends:verify-catalog`. É um comando manual de rede; não é executado no build nem nos testes offline. O relatório atualizado fica em `.data/trend-catalog-check.json`; revise-o antes de substituir a evidência versionada.
+
+
+### Ampliação de cobertura — notícias, redes sociais, fóruns, espiritualidade e viagens
+
+A seleção inicial tinha 25 fontes e concentrava-se em tecnologia e pesquisa. A ampliação adiciona 13 fontes verificadas e dá nomes explícitos às cinco categorias solicitadas:
+
+| Categoria | Fontes disponíveis |
+| --- | --- |
+| Notícias (3) | NPR Top Stories, BBC World, Al Jazeera |
+| Redes sociais (3) | Social Media Today, TechCrunch Social e conta oficial do Mastodon |
+| Fóruns (2) | Hacker News e Discourse Meta |
+| Espiritualidade (4) | Lion’s Roar (budismo), Tiny Buddha (reflexões pessoais), Mindful (atenção plena secular), Baha’i Teachings (perspectiva bahá’í) |
+| Viagens (3) | Nomadic Matt, Travel Off Path e Skift |
+
+Os cartões identificam **conteúdo editorial**, **tópicos de fórum** e **publicações da conta**. O filtro apresenta uma explicação da cobertura de cada nova categoria. Fontes sobre redes sociais não são apresentadas como coleta de perfis ou hashtags; o Mastodon fornece publicações de uma conta específica por RSS. A documentação oficial descreve [RSS de perfis públicos do Mastodon](https://docs.joinmastodon.org/user/network/#rss) e [feeds de fóruns Discourse](https://meta.discourse.org/t/finding-discourse-rss-feeds/264134).
+
+O parser RSS passou de `rss-parser-v1` para `rss-parser-v2`: posts sem título, como os do Mastodon, usam um trecho de até 140 caracteres do conteúdo como identificação, com `titleOrigin=content_excerpt`. Títulos originais mantêm `titleOrigin=feed`. Entradas sem título e sem texto suficiente continuam excluídas, assim como links internos/inválidos. O histórico já gravado não é reescrito; as novas extrações registram a nova versão.
+
+As 38 fontes passaram pelo coletor real após essa alteração. Candidatas bloqueadas por robots.txt, DNS restrito ou frequência incompatível foram excluídas. A ampliação não ativa assinaturas dos tenants, não altera suas fontes existentes e não exige migration.
