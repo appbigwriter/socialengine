@@ -1,0 +1,177 @@
+[
+  {
+    "id": "bbc-business",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "checkedAt": "2026-10-23T14:07:16.407Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "bbc-tech",
+    "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+    "checkedAt": "2026-10-23T14:07:16.401Z",
+    "ok": true,
+    "items": 21
+  },
+  {
+    "id": "bbc-science",
+    "url": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+    "checkedAt": "2026-10-23T14:07:16.407Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "bbc-health",
+    "url": "https://feeds.bbci.co.uk/news/health/rss.xml",
+    "checkedAt": "2026-10-23T14:07:16.808Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "mit-ai",
+    "url": "https://news.mit.edu/rss/topic/artificial-intelligence2",
+    "checkedAt": "2026-10-23T14:07:19.813Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "bbc-culture",
+    "url": "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
+    "checkedAt": "2026-10-23T14:07:17.705Z",
+    "ok": true,
+    "items": 21
+  },
+  {
+    "id": "mit-health",
+    "url": "https://news.mit.edu/rss/topic/health-sciences-and-technology",
+    "checkedAt": "2026-10-23T14:07:19.999Z",
+    "ok": true,
+    "items": 29
+  },
+  {
+    "id": "bbc-world",
+    "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+    "checkedAt": "2026-10-23T14:07:18.746Z",
+    "ok": true,
+    "items": 26
+  },
+  {
+    "id": "mit-business",
+    "url": "https://news.mit.edu/rss/topic/business",
+    "checkedAt": "2026-10-23T14:07:20.738Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "mit-climate",
+    "url": "https://news.mit.edu/rss/topic/climate-change",
+    "checkedAt": "2026-10-23T14:07:20.949Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "google-research",
+    "url": "https://research.google/blog/rss/",
+    "checkedAt": "2026-10-23T14:07:22.949Z",
+    "ok": true,
+    "items": 40
+  },
+  {
+    "id": "techcrunch",
+    "url": "https://techcrunch.com/feed/",
+    "checkedAt": "2026-10-23T14:07:23.692Z",
+    "ok": true,
+    "items": 20
+  },
+  {
+    "id": "mit-education",
+    "url": "https://news.mit.edu/rss/topic/education",
+    "checkedAt": "2026-10-23T14:07:21.545Z",
+    "ok": true,
+    "items": 39
+  },
+  {
+    "id": "google-ai",
+    "url": "https://blog.google/technology/ai/rss/",
+    "checkedAt": "2026-10-23T14:07:22.132Z",
+    "ok": true,
+    "items": 20
+  },
+  {
+    "id": "verge",
+    "url": "https://www.theverge.com/rss/index.xml",
+    "checkedAt": "2026-10-23T14:07:24.145Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "npr-health",
+    "url": "https://feeds.npr.org/103537970/rss.xml",
+    "checkedAt": "2026-10-23T14:07:24.280Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "techcrunch-ai",
+    "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "checkedAt": "2026-10-23T14:07:23.780Z",
+    "ok": true,
+    "items": 20
+  },
+  {
+    "id": "smithsonian",
+    "url": "https://www.smithsonianmag.com/rss/latest_articles/",
+    "checkedAt": "2026-10-23T14:07:24.780Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "buffer",
+    "url": "https://buffer.com/resources/rss/",
+    "checkedAt": "2026-10-23T14:07:24.971Z",
+    "ok": true,
+    "items": 15
+  },
+  {
+    "id": "npr-culture",
+    "url": "https://feeds.npr.org/1008/rss.xml",
+    "checkedAt": "2026-10-23T14:07:24.742Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "techcrunch-social",
+    "url": "https://techcrunch.com/category/social/feed/",
+    "checkedAt": "2026-10-23T14:07:23.952Z",
+    "ok": true,
+    "items": 20
+  },
+  {
+    "id": "npr-food",
+    "url": "https://feeds.npr.org/1053/rss.xml",
+    "checkedAt": "2026-10-23T14:07:25.781Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "wordpress",
+    "url": "https://wordpress.org/news/feed/",
+    "checkedAt": "2026-10-23T14:07:25.277Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "npr-business",
+    "url": "https://feeds.npr.org/1006/rss.xml",
+    "checkedAt": "2026-10-23T14:07:25.717Z",
+    "ok": true,
+    "items": 10
+  },
+  {
+    "id": "npr-science",
+    "url": "https://feeds.npr.org/1007/rss.xml",
+    "checkedAt": "2026-10-23T14:07:27.058Z",
+    "ok": true,
+    "items": 10
+  }
+]

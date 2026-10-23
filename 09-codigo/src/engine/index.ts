@@ -9,6 +9,7 @@ import {enqueue,jobRow} from './jobs.ts';
 import type {EngineDeps} from './types.ts';
 import {ensureSocialCapability,requireApproved,socialCapabilities,unavailable} from './social.ts';
 import type {TrendSource,ExtractedItem} from './trends.ts';
+import {canonicalUrl} from './trends.ts';
 export type {EngineDeps} from './types.ts';
 export {runWorkerOnce} from './jobs.ts';
 export {extractPdf} from './media.ts';
@@ -25,7 +26,9 @@ export async function registerEngineRoutes(app:FastifyInstance,deps:EngineDeps){
  app.get('/api/tenants/:id/capabilities',async req=>{await deps.scopeFor(req);return {social:socialCapabilities,ai:{provider:'openai',configuredPerTenant:true},video:{available:await videoCapability()},trends:{connectors:['rss','html'],accessAcknowledgementRequired:true}};});
  app.post<{Body:unknown}>('/api/tenants/:id/trend-sources',async req=>{
   const scope=await deps.scopeFor(req,editors),data=sourceSchema.parse(req.body);publicUrl(data.url);
-  if((await deps.repo.list(scope,'trend_source')).length>=30)throw invalid('Limite de 30 fontes por influenciador atingido.');
+  const existing=await deps.repo.list<TrendSource>(scope,'trend_source');
+  if(existing.some(source=>canonicalUrl(source.data.url)===canonicalUrl(data.url)))throw invalid('Esta fonte já está cadastrada neste influenciador.',409);
+  if(existing.length>=30)throw invalid('Limite de 30 fontes por influenciador atingido.');
   const source=await deps.repo.insert(scope,'trend_source',data);await deps.repo.audit(scope,'trend_source.created',source.id);
   if(data.enabled&&data.accessAcknowledged)await enqueue(deps,scope,'trends.collect',{sourceId:source.id},`collect:${source.id}:initial`);
   return {source};

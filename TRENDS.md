@@ -113,3 +113,29 @@ O dashboard mostra oportunidades e saúde das fontes. Erros operacionais sensív
 
 - [YouTube Data API — videos.list](https://developers.google.com/youtube/data/reference/rest/v3/videos/list): parâmetros e campos disponíveis devem ser verificados na implementação; não representa acesso irrestrito a todos os sinais do nicho.
 - [Google — princípios de crawling](https://developers.google.com/crawling/docs/about-crawling): referência para controle de recrawl, cache e respeito às preferências de acesso. A implementação deve validar também as regras de cada fonte escolhida.
+
+
+## Catálogo de fontes sugeridas — implementado em 23/10/2026
+
+O Radar possui a aba **Fontes sugeridas**, com 25 feeds em inglês de nove editores: MIT News, Google, TechCrunch, NPR, BBC, The Verge, Smithsonian, Buffer e WordPress. São oito temas: tecnologia/IA, marketing/creators, saúde, negócios, cultura/lifestyle, ciência/ambiente, atualidades e educação. Há busca, filtro por tema e indicação de fontes já adicionadas no influenciador ativo.
+
+O catálogo faz parte do código e não cria assinaturas nem registros de coleta automaticamente. “Adicionar fonte” abre um formulário com URL, nome, termos em inglês, idioma, região e intervalo inicial de seis horas. O usuário ajusta os termos ao nicho e confirma as condições de acesso. A assinatura usa a API existente, com escopo de tenant, permissões e limite de 30 fontes. A interface sinaliza fontes existentes e a API rejeita cadastros sequenciais do mesmo URL canônico no mesmo tenant; o mesmo feed pode ser escolhido por tenants diferentes. Não há nova migration.
+
+### O que pode ser monitorado hoje
+
+- **RSS / Atom:** notícias, blogs, pesquisas e feeds temáticos. O coletor lê até 40 entradas por rodada, usando os textos/resumos efetivamente disponibilizados pelo editor; não busca automaticamente o artigo completo de cada entrada.
+- **HTML público:** extração do conteúdo principal de uma página específica, com texto suficiente. Não é um crawler de todo o site e não contorna login, paywall, bloqueio ou restrições de robots.txt.
+- PDFs, textos e materiais de referência pertencem à Biblioteca de fontes; não são conectores de monitoramento recorrente do Radar.
+- Popularidade no Instagram/TikTok/YouTube, Google Trends e comunidades exige conectores próprios, sinais quantitativos e contratos de acesso. Este catálogo não os simula. Feed recente gera uma oportunidade editorial; crescimento continua dependendo de histórico comparável.
+
+### Seleção, acesso e verificação
+
+Foram mantidos apenas os 25 feeds que retornaram entradas válidas pelo coletor de produção, com as proteções de rede, robots.txt, formato e tamanho existentes. Os testes de rede ocorreram em 23/10/2026; disponibilidade futura e acesso a partir da VPS podem variar. O relatório contém apenas URL, data, contagem de entradas e resultado, sem republicar os materiais: `09-codigo/docs/trend-catalog-validation.json`.
+
+Fontes que falharam na verificação foram removidas, incluindo endereços com 404, XML inválido, tamanho excessivo, DNS recusado ou crawl-delay acima do limite. Não foram reduzidas proteções para fazê-las funcionar.
+
+A disponibilidade técnica não concede direitos de republicação. Os cartões e o formulário apontam as condições do editor. A BBC exige permissão para uso comercial; isso é destacado antes da ativação. O MIT News tem requisitos de atribuição e condições separadas para imagens. Nenhuma imagem é importada pelo catálogo. Fontes institucionais de fornecedores, como Google, são identificadas como tais.
+
+Referências primárias: [feeds do MIT News](https://news.mit.edu/rss), [política do MIT News](https://news.mit.edu/terms-of-use), [termos da BBC — seção sobre RSS](https://downloads.bbc.co.uk/usingthebbc/bbc_terms_of_use_19September2022english.pdf). Os próprios feeds dos demais editores estão registrados no catálogo e no relatório.
+
+Para revalidar a partir do diretório `09-codigo`: `npm run trends:verify-catalog`. É um comando manual de rede; não é executado no build nem nos testes offline. O relatório atualizado fica em `.data/trend-catalog-check.json`; revise-o antes de substituir a evidência versionada.
