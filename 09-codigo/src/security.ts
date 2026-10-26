@@ -46,6 +46,7 @@ export async function authenticate(request:FastifyRequest,config:RuntimeConfig):
 }
 export async function verifyAuthority(config:RuntimeConfig,actorId:string):Promise<void>{
   if(config.sandbox)return;
+  if(config.bootstrapUserIds.includes(actorId))return;
   if(!config.ownerId||!config.authorityVerifierUrl||!config.authorityOperatorToken)fail(503,'AUTHORITY_NOT_CONFIGURED','Ownership e validação do Authority aguardam configuração.');
   // Explicit adapter contract, to be aligned with Authority. No guessed endpoint.
   const url=new URL(config.authorityVerifierUrl!);if(url.protocol!=='https:')fail(503,'AUTHORITY_NOT_CONFIGURED','O verificador Authority exige HTTPS.');
