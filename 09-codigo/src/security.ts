@@ -52,7 +52,10 @@ export async function verifyAuthority(config:RuntimeConfig,actorId:string):Promi
   const url=new URL(config.authorityVerifierUrl!);if(url.protocol!=='https:')fail(503,'AUTHORITY_NOT_CONFIGURED','O verificador Authority exige HTTPS.');
   let res:Response;
   try{res=await fetch(url,{method:'POST',redirect:'error',headers:{'content-type':'application/json',Authorization:`Bearer ${config.authorityOperatorToken}`},body:JSON.stringify({project_id:config.projectId,owner_id:config.ownerId,user_id:actorId}),signal:AbortSignal.timeout(10000)});}catch{fail(503,'AUTHORITY_UNAVAILABLE','O verificador de acesso está indisponível.');}
-  if(!res!.ok)fail(403,'AUTHORITY_DENIED','Acesso não autorizado pelo Authority.');
+  if(res!.status===401)fail(503,'AUTHORITY_NOT_CONFIGURED','A credencial de integração com o Authority não foi reconhecida. Solicite a revisão da configuração do servidor.');
+  if(res!.status===404)fail(503,'AUTHORITY_NOT_CONFIGURED','O endpoint de verificação do Authority não foi encontrado. Solicite a revisão da configuração do servidor.');
+  if(res!.status===403)fail(403,'AUTHORITY_DENIED','Acesso não autorizado pelo Authority.');
+  if(!res!.ok)fail(503,'AUTHORITY_UNAVAILABLE','O verificador de acesso está indisponível.');
   const result=await res!.json() as Record<string,unknown>;
   if(result.authorized!==true||result.project_id!==config.projectId||result.owner_id!==config.ownerId||result.user_id!==actorId)fail(403,'AUTHORITY_DENIED','O vínculo de identidade não foi confirmado.');
 }

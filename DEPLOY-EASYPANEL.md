@@ -62,7 +62,7 @@ A autorização só é aceita com resposta HTTP de sucesso e:
 {"authorized":true,"project_id":"mesmo projeto","owner_id":"mesmo owner","user_id":"mesmo usuário"}
 ```
 
-Esse é o contrato esperado pelo código, **ainda a alinhar com o serviço Authority existente**. Não foi assumido um endpoint remoto nem validado um contrato inexistente. Ausência ou divergência mantém os acessos privados e trabalhos bloqueados.
+O endpoint `POST /api/verify` foi implementado no Authority em 26/10/2026. A credencial de operador autentica o serviço chamador; a decisão considera o projeto/proprietário no catálogo, o usuário ativo em `auth.users` e seus papéis existentes em `custom_socialengine.memberships`. A rota não cria vínculos nem concede permissões. O token configurado no SocialEngine deve ser o token de operador reconhecido pelo Authority. Configuração ausente ou dependência indisponível mantém os acessos bloqueados.
 
 ### Integrações opcionais
 

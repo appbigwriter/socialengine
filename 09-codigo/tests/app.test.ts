@@ -18,6 +18,14 @@ test('API: tenant isolation, blog, editorial workflow, encrypted credentials and
   const auth={authorization:'Bearer sandbox-admin'},otherAuth={authorization:'Bearer sandbox-second'};
   try{
     assert.equal((await app.inject({method:'GET',url:'/api/workspaces'})).statusCode,401);
+    const kit={text:'# Character Bible\nNome: Persona de teste\n## Tom de voz\nPreciso e acolhedor',filename:'persona.md'};
+    const created=await app.inject({method:'POST',url:'/api/workspaces',headers:auth,payload:{name:'Persona de teste',characterKit:kit}});
+    assert.equal(created.statusCode,200,created.body);
+    const persona=created.json().workspace;assert.deepEqual(persona.characterKit,kit);
+    const personaDataset=await app.inject({url:`/api/tenants/${persona.id}/dataset`,headers:auth});assert.deepEqual(personaDataset.json().workspace.characterKit,kit);
+    assert.equal((await app.inject({url:`/api/tenants/${persona.id}/dataset`,headers:otherAuth})).statusCode,403);
+    await app.inject({method:'PATCH',url:`/api/tenants/${persona.id}/settings`,headers:auth,payload:{name:persona.name,niche:'Novo nicho'}});
+    assert.deepEqual((await app.inject({url:`/api/tenants/${persona.id}/dataset`,headers:auth})).json().workspace.characterKit,kit);
     const a=await repo.createWorkspace(SANDBOX_ACTOR,config.projectId,config.ownerId!,{name:'Primeiro influenciador'});
     const b=await repo.createWorkspace(SANDBOX_SECOND_ACTOR,config.projectId,config.ownerId!,{name:'Segundo influenciador'});
     const scope=await repo.getScope(SANDBOX_ACTOR,config.projectId,config.ownerId!,a.id);
@@ -31,7 +39,7 @@ test('API: tenant isolation, blog, editorial workflow, encrypted credentials and
     assert.equal((await app.inject({method:'GET',url:`/api/tenants/${a.id}/dataset`,headers:auth})).json().jobs.length,0,'unacknowledged source must not enqueue collection');
     assert.equal((await addSource(a.id,auth,{...suggested,url:suggested.url+'?utm_source=catalog#top'})).statusCode,409);
     assert.equal((await addSource(b.id,otherAuth,suggested)).statusCode,200,'the same feed may be selected independently in another tenant');
-    const list=(await app.inject({method:'GET',url:'/api/workspaces',headers:auth})).json();assert.equal(list.workspaces.length,1);assert.equal(list.workspaces[0].id,a.id);
+    const list=(await app.inject({method:'GET',url:'/api/workspaces',headers:auth})).json();assert.equal(list.workspaces.length,2);assert(list.workspaces.some((w:{id:string})=>w.id===a.id));
     assert.equal((await app.inject({method:'GET',url:`/api/tenants/${b.id}/dataset`,headers:auth})).statusCode,403);
     assert.equal((await app.inject({method:'PATCH',url:`/api/tenants/${a.id}/settings`,headers:auth,payload:{...a,blog:{...a.blog,status:'active',url:''}}})).statusCode,400);
     const settings=await app.inject({method:'PATCH',url:`/api/tenants/${a.id}/settings`,headers:auth,payload:{...a,blog:{...a.blog,status:'active',url:'https://blog.example.com',platform:'Ainda não definido'},ai:{provider:'openai',model:'configured-model',monthlyRequests:10}}});assert.equal(settings.statusCode,200,settings.body);
