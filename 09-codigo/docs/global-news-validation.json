@@ -1,0 +1,55 @@
+[
+  {
+    "id": "nyt-world",
+    "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T14:53:47.000Z",
+    "checkedAt": "2026-10-23T15:04:50.388Z"
+  },
+  {
+    "id": "wsj-world",
+    "url": "https://feeds.content.dowjones.io/public/rss/RSSWorldNews",
+    "ok": false,
+    "error": "Coleta bloqueada pelas regras de acesso da origem.",
+    "checkedAt": "2026-10-23T15:04:50.711Z"
+  },
+  {
+    "id": "ft-world",
+    "url": "https://www.ft.com/world?format=rss",
+    "ok": true,
+    "items": 25,
+    "latestPublishedAt": "2026-10-23T14:42:14.000Z",
+    "checkedAt": "2026-10-23T15:04:50.937Z"
+  },
+  {
+    "id": "france24",
+    "url": "https://www.france24.com/en/rss",
+    "ok": true,
+    "items": 24,
+    "latestPublishedAt": "2026-10-23T14:55:15.000Z",
+    "checkedAt": "2026-10-23T15:04:51.289Z"
+  },
+  {
+    "id": "cnn-world",
+    "url": "https://rss.cnn.com/rss/edition_world.rss",
+    "ok": false,
+    "error": "Client network socket disconnected before secure TLS connection was established",
+    "checkedAt": "2026-10-23T15:04:51.661Z"
+  },
+  {
+    "id": "dw-world",
+    "url": "https://rss.dw.com/rdf/rss-en-all",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T14:55:00.000Z",
+    "checkedAt": "2026-10-23T15:04:51.986Z"
+  },
+  {
+    "id": "washington-post-world",
+    "url": "https://feeds.washingtonpost.com/rss/world",
+    "ok": false,
+    "error": "Fonte indisponível (HTTP 502).",
+    "checkedAt": "2026-10-23T15:04:58.535Z"
+  }
+]

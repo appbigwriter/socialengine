@@ -1,0 +1,14 @@
+import {mkdir,readFile} from 'node:fs/promises';
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+const code=resolve(dirname(fileURLToPath(import.meta.url)),'..');const directory=resolve(code,'../deploy');await mkdir(directory,{recursive:true});
+const archive=resolve(directory,'socialengine-easypanel.tar.gz');
+const files=['Dockerfile','.dockerignore','package.json','package-lock.json','tsconfig.json','vite.config.ts','src','scripts','supabase','web'];
+const result=spawnSync('tar',['-czf',archive,'--exclude=node_modules','--exclude=dist','--exclude=.data','--exclude=.env','--exclude=.env.local','--exclude=.env.production','-C',code,...files],{encoding:'utf8'});
+if(result.status!==0)throw new Error('Failed to create deployment archive: '+result.stderr);
+const listing=spawnSync('tar',['-tzf',archive],{encoding:'utf8'});if(listing.status!==0)throw new Error('Unable to verify archive.');
+const entries=listing.stdout.split(/\r?\n/).filter(Boolean);
+if(entries.some(path=>/(^|\/)(\.env(?:\.[^/]*)?|\.git|node_modules|\.data)(\/|$)/.test(path)))throw new Error('Unsafe file in deployment archive.');
+const bytes=await readFile(archive);console.log(JSON.stringify({archive,bytes:bytes.length,files:entries.length,sha256:createHash('sha256').update(bytes).digest('hex'),buildContext:'/',dockerfile:'Dockerfile'},null,2));

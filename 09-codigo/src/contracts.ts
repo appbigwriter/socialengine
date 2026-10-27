@@ -4,7 +4,7 @@ export type Kind='source'|'post'|'post_version'|'social_account'|'publication'|'
 export interface Actor {id:string; mode:'supabase'|'sandbox'|'authority'}
 export interface Scope {projectId:string;ownerId:string;tenantId:string;actorId:string;roles:Role[]}
 export interface Blog {url:string;status:'undefined'|'provisioning'|'active'|'inactive';platform:string;feedUrl:string;language:string;integrationState:'not_configured'|'connected'|'error'}
-export interface Workspace {id:string;name:string;niche:string;audience:string;objectives:string;timezone:string;brand:{color:string;voice:string;logoFileId?:string};blog:Blog;roles:Role[];createdAt:string}
+export interface Workspace {id:string;name:string;niche:string;audience:string;objectives:string;timezone:string;brand:{color:string;voice:string;logoFileId?:string};blog:Blog;characterKit?:import('./character-kit').CharacterKit;roles:Role[];createdAt:string}
 export interface Slide {id:string;title:string;body:string;imageFileId?:string}
 export interface PostData {title:string;format:'carousel'|'video'|'text';slides:Slide[];caption:string;cta:string;sourceIds:string[];structure:string;referenceUrl?:string;referenceFileId?:string;color:string;platforms:Platform[];plannedAt?:string;status:'draft'|'in_review'|'changes_requested'|'approved';reviewComment?:string;approvedBy?:string;approvedAt?:string;approvedRevision?:number;video?:{sceneDurations:number[];audioFileId?:string;fileId?:string}}
 export interface RecordRow<T=Record<string,unknown>> {id:string;tenantId:string;kind:Kind;data:T;revision:number;createdAt:string;updatedAt:string}

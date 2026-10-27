@@ -1,0 +1,354 @@
+[
+  {
+    "id": "social-media-today",
+    "url": "https://www.socialmediatoday.com/feeds/news/",
+    "checkedAt": "2026-10-23T15:10:26.350Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-22T22:36:18.000Z"
+  },
+  {
+    "id": "hacker-news",
+    "url": "https://news.ycombinator.com/rss",
+    "checkedAt": "2026-10-23T15:10:26.350Z",
+    "ok": true,
+    "items": 30,
+    "latestPublishedAt": "2026-10-23T13:41:10.000Z"
+  },
+  {
+    "id": "npr-news",
+    "url": "https://feeds.npr.org/1001/rss.xml",
+    "checkedAt": "2026-10-23T15:10:26.342Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T14:16:10.000Z"
+  },
+  {
+    "id": "mit-ai",
+    "url": "https://news.mit.edu/rss/topic/artificial-intelligence2",
+    "checkedAt": "2026-10-23T15:10:28.162Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T04:00:00.000Z"
+  },
+  {
+    "id": "lions-roar",
+    "url": "https://www.lionsroar.com/feed/",
+    "checkedAt": "2026-10-23T15:10:26.994Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-08T19:29:45.000Z"
+  },
+  {
+    "id": "nomadic-matt",
+    "url": "https://www.nomadicmatt.com/feed/",
+    "checkedAt": "2026-10-23T15:10:27.899Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-07-28T16:40:13.000Z"
+  },
+  {
+    "id": "techcrunch",
+    "url": "https://techcrunch.com/feed/",
+    "checkedAt": "2026-10-23T15:10:29.845Z",
+    "ok": true,
+    "items": 20,
+    "latestPublishedAt": "2026-10-23T15:00:09.000Z"
+  },
+  {
+    "id": "bbc-tech",
+    "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+    "checkedAt": "2026-10-23T15:10:29.958Z",
+    "ok": true,
+    "items": 21,
+    "latestPublishedAt": "2026-10-23T12:24:17.000Z"
+  },
+  {
+    "id": "npr-health",
+    "url": "https://feeds.npr.org/103537970/rss.xml",
+    "checkedAt": "2026-10-23T15:10:28.491Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-01-12T21:01:37.000Z"
+  },
+  {
+    "id": "buffer",
+    "url": "https://buffer.com/resources/rss/",
+    "checkedAt": "2026-10-23T15:10:29.299Z",
+    "ok": true,
+    "items": 15,
+    "latestPublishedAt": "2026-10-23T09:00:00.000Z"
+  },
+  {
+    "id": "bbc-business",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "checkedAt": "2026-10-23T15:10:30.240Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T12:24:17.000Z"
+  },
+  {
+    "id": "bbc-science",
+    "url": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+    "checkedAt": "2026-10-23T15:10:30.734Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T14:44:59.000Z"
+  },
+  {
+    "id": "bbc-health",
+    "url": "https://feeds.bbci.co.uk/news/health/rss.xml",
+    "checkedAt": "2026-10-23T15:10:30.974Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T14:57:30.000Z"
+  },
+  {
+    "id": "mit-health",
+    "url": "https://news.mit.edu/rss/topic/health-sciences-and-technology",
+    "checkedAt": "2026-10-23T15:10:33.329Z",
+    "ok": true,
+    "items": 29,
+    "latestPublishedAt": "2026-10-21T20:40:00.000Z"
+  },
+  {
+    "id": "bbc-culture",
+    "url": "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
+    "checkedAt": "2026-10-23T15:10:31.332Z",
+    "ok": true,
+    "items": 21,
+    "latestPublishedAt": "2026-10-23T09:41:44.000Z"
+  },
+  {
+    "id": "mit-business",
+    "url": "https://news.mit.edu/rss/topic/business",
+    "checkedAt": "2026-10-23T15:10:33.556Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-22T20:20:00.000Z"
+  },
+  {
+    "id": "bbc-world",
+    "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+    "checkedAt": "2026-10-23T15:10:32.283Z",
+    "ok": true,
+    "items": 27,
+    "latestPublishedAt": "2026-10-23T15:06:27.000Z"
+  },
+  {
+    "id": "mit-climate",
+    "url": "https://news.mit.edu/rss/topic/climate-change",
+    "checkedAt": "2026-10-23T15:10:34.305Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-15T21:00:00.000Z"
+  },
+  {
+    "id": "google-research",
+    "url": "https://research.google/blog/rss/",
+    "checkedAt": "2026-10-23T15:10:35.632Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-21T16:23:53.000Z"
+  },
+  {
+    "id": "techcrunch-ai",
+    "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "checkedAt": "2026-10-23T15:10:36.425Z",
+    "ok": true,
+    "items": 20,
+    "latestPublishedAt": "2026-10-23T04:00:00.000Z"
+  },
+  {
+    "id": "mit-education",
+    "url": "https://news.mit.edu/rss/topic/education",
+    "checkedAt": "2026-10-23T15:10:34.575Z",
+    "ok": true,
+    "items": 39,
+    "latestPublishedAt": "2026-10-08T21:25:00.000Z"
+  },
+  {
+    "id": "verge",
+    "url": "https://www.theverge.com/rss/index.xml",
+    "checkedAt": "2026-10-23T15:10:36.662Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T14:47:41.000Z"
+  },
+  {
+    "id": "techcrunch-social",
+    "url": "https://techcrunch.com/category/social/feed/",
+    "checkedAt": "2026-10-23T15:10:36.540Z",
+    "ok": true,
+    "items": 20,
+    "latestPublishedAt": "2026-10-22T23:50:41.000Z"
+  },
+  {
+    "id": "smithsonian",
+    "url": "https://www.smithsonianmag.com/rss/latest_articles/",
+    "checkedAt": "2026-10-23T15:10:37.527Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T14:54:39.000Z"
+  },
+  {
+    "id": "npr-culture",
+    "url": "https://feeds.npr.org/1008/rss.xml",
+    "checkedAt": "2026-10-23T15:10:36.821Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-22T20:47:24.000Z"
+  },
+  {
+    "id": "google-ai",
+    "url": "https://blog.google/technology/ai/rss/",
+    "checkedAt": "2026-10-23T15:10:35.133Z",
+    "ok": true,
+    "items": 20,
+    "latestPublishedAt": "2026-10-21T04:00:00.000Z"
+  },
+  {
+    "id": "npr-business",
+    "url": "https://feeds.npr.org/1006/rss.xml",
+    "checkedAt": "2026-10-23T15:10:38.054Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T11:00:00.000Z"
+  },
+  {
+    "id": "npr-food",
+    "url": "https://feeds.npr.org/1053/rss.xml",
+    "checkedAt": "2026-10-23T15:10:38.181Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-20T09:00:00.000Z"
+  },
+  {
+    "id": "al-jazeera",
+    "url": "https://www.aljazeera.com/xml/rss/all.xml",
+    "checkedAt": "2026-10-23T15:10:39.513Z",
+    "ok": true,
+    "items": 25,
+    "latestPublishedAt": "2026-10-23T14:56:05.000Z"
+  },
+  {
+    "id": "wordpress",
+    "url": "https://wordpress.org/news/feed/",
+    "checkedAt": "2026-10-23T15:10:37.933Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-21T13:44:09.000Z"
+  },
+  {
+    "id": "mastodon-official",
+    "url": "https://mastodon.social/@Mastodon.rss",
+    "checkedAt": "2026-10-23T15:10:39.582Z",
+    "ok": true,
+    "items": 20,
+    "latestPublishedAt": "2026-10-19T09:59:05.000Z"
+  },
+  {
+    "id": "tiny-buddha",
+    "url": "https://tinybuddha.com/feed/",
+    "checkedAt": "2026-10-23T15:10:40.520Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-22T16:11:02.000Z"
+  },
+  {
+    "id": "npr-science",
+    "url": "https://feeds.npr.org/1007/rss.xml",
+    "checkedAt": "2026-10-23T15:10:38.458Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-22T20:47:25.000Z"
+  },
+  {
+    "id": "discourse-meta",
+    "url": "https://meta.discourse.org/latest.rss",
+    "checkedAt": "2026-10-23T15:10:39.722Z",
+    "ok": true,
+    "items": 30,
+    "latestPublishedAt": "2026-10-23T13:49:11.000Z"
+  },
+  {
+    "id": "travel-off-path",
+    "url": "https://www.traveloffpath.com/feed/",
+    "checkedAt": "2026-10-23T15:10:41.274Z",
+    "ok": true,
+    "items": 7,
+    "latestPublishedAt": "2026-10-23T13:22:36.000Z"
+  },
+  {
+    "id": "skift",
+    "url": "https://skift.com/feed/",
+    "checkedAt": "2026-10-23T15:10:41.488Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T14:05:55.000Z"
+  },
+  {
+    "id": "nyt-world",
+    "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+    "checkedAt": "2026-10-23T15:10:41.777Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T15:07:29.000Z"
+  },
+  {
+    "id": "ft-world",
+    "url": "https://www.ft.com/world?format=rss",
+    "checkedAt": "2026-10-23T15:10:42.014Z",
+    "ok": true,
+    "items": 25,
+    "latestPublishedAt": "2026-10-23T14:42:14.000Z"
+  },
+  {
+    "id": "mindful",
+    "url": "https://www.mindful.org/feed/",
+    "checkedAt": "2026-10-23T15:10:40.855Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T01:15:38.000Z"
+  },
+  {
+    "id": "france24",
+    "url": "https://www.france24.com/en/rss",
+    "checkedAt": "2026-10-23T15:10:42.486Z",
+    "ok": true,
+    "items": 24,
+    "latestPublishedAt": "2026-10-23T14:55:15.000Z"
+  },
+  {
+    "id": "dw-world",
+    "url": "https://rss.dw.com/rdf/rss-en-all",
+    "checkedAt": "2026-10-23T15:10:42.455Z",
+    "ok": true,
+    "items": 40,
+    "latestPublishedAt": "2026-10-23T14:55:00.000Z"
+  },
+  {
+    "id": "bahai-teachings",
+    "url": "https://bahaiteachings.org/feed/",
+    "checkedAt": "2026-10-23T15:10:41.578Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T13:00:00.000Z"
+  },
+  {
+    "id": "google-trends-us",
+    "url": "https://trends.google.com/trending/rss?geo=US",
+    "checkedAt": "2026-10-23T15:10:42.957Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T14:40:00.000Z"
+  },
+  {
+    "id": "google-trends-gb",
+    "url": "https://trends.google.com/trending/rss?geo=GB",
+    "checkedAt": "2026-10-23T15:10:43.016Z",
+    "ok": true,
+    "items": 10,
+    "latestPublishedAt": "2026-10-23T14:50:00.000Z"
+  }
+]

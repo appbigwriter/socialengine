@@ -9,6 +9,7 @@ import {enqueue,jobRow} from './jobs.ts';
 import type {EngineDeps} from './types.ts';
 import {ensureSocialCapability,requireApproved,socialCapabilities,unavailable} from './social.ts';
 import type {TrendSource,ExtractedItem} from './trends.ts';
+import {canonicalUrl} from './trends.ts';
 export type {EngineDeps} from './types.ts';
 export {runWorkerOnce} from './jobs.ts';
 export {extractPdf} from './media.ts';
@@ -25,7 +26,9 @@ export async function registerEngineRoutes(app:FastifyInstance,deps:EngineDeps){
  app.get('/api/tenants/:id/capabilities',async req=>{await deps.scopeFor(req);return {social:socialCapabilities,ai:{provider:'openai',configuredPerTenant:true},video:{available:await videoCapability()},trends:{connectors:['rss','html'],accessAcknowledgementRequired:true}};});
  app.post<{Body:unknown}>('/api/tenants/:id/trend-sources',async req=>{
   const scope=await deps.scopeFor(req,editors),data=sourceSchema.parse(req.body);publicUrl(data.url);
-  if((await deps.repo.list(scope,'trend_source')).length>=30)throw invalid('Limite de 30 fontes por influenciador atingido.');
+  const existing=await deps.repo.list<TrendSource>(scope,'trend_source');
+  if(existing.some(source=>canonicalUrl(source.data.url)===canonicalUrl(data.url)))throw invalid('Esta fonte já está cadastrada neste influenciador.',409);
+  if(existing.length>=30)throw invalid('Limite de 30 fontes por influenciador atingido.');
   const source=await deps.repo.insert(scope,'trend_source',data);await deps.repo.audit(scope,'trend_source.created',source.id);
   if(data.enabled&&data.accessAcknowledged)await enqueue(deps,scope,'trends.collect',{sourceId:source.id},`collect:${source.id}:initial`);
   return {source};
@@ -69,7 +72,7 @@ export async function registerEngineRoutes(app:FastifyInstance,deps:EngineDeps){
   });
   try{
    const workspace=(await deps.repo.listWorkspaces(scope.actorId,scope.projectId,scope.ownerId)).find(w=>w.id===scope.tenantId);
-   const result=await generateOpenAI(key,model,sources,{brand:workspace?.brand,niche:workspace?.niche,audience:workspace?.audience,structure:body.structure,slideIndex:body.slideIndex,previousSlides:body.slideIndex===undefined?undefined:post.data.slides});
+   const result=await generateOpenAI(key,model,sources,{brand:workspace?.brand,niche:workspace?.niche,audience:workspace?.audience,objectives:workspace?.objectives,language:workspace?.blog.language,characterKit:workspace?.characterKit?.text,structure:body.structure,slideIndex:body.slideIndex,previousSlides:body.slideIndex===undefined?undefined:post.data.slides});
    const usage=await deps.repo.get(scope,'ai_usage',usageId);if(usage)await deps.repo.update(scope,'ai_usage',usage.id,{...usage.data,state:'succeeded',usage:result.usage,inputTokens:result.usage?.input_tokens??null,outputTokens:result.usage?.output_tokens??null,totalTokens:result.usage?.total_tokens??null,cost:null,providerId:result.providerId,completedAt:new Date().toISOString()},usage.revision);
    let slides:Slide[]=result.content.slides.map(s=>({...s,id:randomUUID()}));if(body.slideIndex!==undefined){slides=[...post.data.slides];slides[body.slideIndex]={...slides[body.slideIndex],...result.content.slides[0]};}
    const next=await deps.repo.update(scope,'post',post.id,{...post.data,title:body.slideIndex===undefined?result.content.title:post.data.title,slides,caption:body.slideIndex===undefined?result.content.caption:post.data.caption,cta:body.slideIndex===undefined?result.content.cta:post.data.cta,sourceIds:body.sourceIds,structure:body.structure,status:'draft',approvedBy:undefined,approvedAt:undefined,approvedRevision:undefined,video:undefined},body.revision);
